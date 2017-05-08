@@ -22,13 +22,13 @@
                 </cell>
                 <datetime title="开始日期" v-model="time1" :start-date="today" value-text-align="left" confirm-text="确认" cancel-text="取消"></datetime>
                 <datetime title="结束日期" v-model="time2" :start-date="today" value-text-align="left" confirm-text="确认" cancel-text="取消"></datetime>
-                <x-address title="旅行社城市" v-model="addressValue" raw-value :list="addressData" value-text-align="left"></x-address>
-                <x-input title="旅行社名称" placeholder="必填" v-model="agencyName"></x-input>
-                <x-address title="出发城市" v-model="startCity" raw-value :list="addressData" value-text-align="left"></x-address>
-                <x-address title="到达城市" v-model="arriveCity" raw-value :list="addressData" value-text-align="left"></x-address>
-                <x-input title="返程天数" type="number" placeholder="必填" v-model="days"></x-input>
-                <x-input title="出行人数" type="number" placeholder="必填" v-model="number"></x-input>
-                <x-input title="儿童人数" type="number" placeholder="必填" v-model="child"></x-input>
+                <x-address title="旅行社城市" v-model="addressValue" raw-value :list="addressData" value-text-align="left" required></x-address>
+                <x-input title="旅行社名称" placeholder="必填" v-model="agencyName" required></x-input>
+                <x-address title="出发城市" v-model="startCity" raw-value :list="addressData" value-text-align="left" hide-district></x-address>
+                <x-address title="到达城市" v-model="arriveCity" raw-value :list="addressData" value-text-align="left" hide-district></x-address>
+                <x-input title="返程天数" type="number" placeholder="必填" v-model="days" required></x-input>
+                <x-input title="出行人数" type="number" placeholder="必填" v-model="number" required></x-input>
+                <x-input title="儿童人数" type="text" placeholder="必填" v-model="child" required></x-input>
             </group>
         </flexbox-item>
         <flexbox-item class="apin-btn-area">
@@ -42,18 +42,6 @@ import { Flexbox, FlexboxItem, XButton,Range, Group, Cell, XInput, Selector, Pop
 export default {
   data () {
     return {
-        
-        value1: '张三',
-        value2: '工艺技术',
-        value3: '',
-        value7: '',
-        value8: '',
-        value4: '',
-        value5: ['A'],
-        value6: [],
-        list: [['A', 'B', 'C']],
-        numberValue: 0,
-
         today: '',
         zone: '1',
         person: '1',
@@ -67,7 +55,7 @@ export default {
         arriveCity: [],
         days: '',
         number: '',
-        child: 0
+        child: '0'
     }
   },
   components: {
