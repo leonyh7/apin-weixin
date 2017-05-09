@@ -1,34 +1,78 @@
 <template>
   <flexbox orient="vertical" :gutter="0" class="apin-order">
     <flexbox-item>
-      <group>
-        <cell title="人数" :value="orderInfo.number"></cell>
-        <cell title="价格" :value="orderInfo.price"></cell>
+      <group label-width="5em" label-margin-right="1.5em">
+        <x-input title="业务员姓名" placeholder="必填" v-model="name" value-text-align="left" required ref="validate"></x-input>
+        <cell title="供应匹配" value-align="left">
+          <checker v-model="supply" default-item-class="apin-select" selected-item-class="apin-selected">
+            <checker-item value="1">是</checker-item>
+            <checker-item value="2">否</checker-item>
+          </checker>
+        </cell>
+        <x-input title="起飞机场" placeholder="必填" v-model="offAirport" value-text-align="left" required ref="validate"></x-input>
+        <x-input title="降落机场" placeholder="必填" v-model="landAirport" value-text-align="left" required ref="validate"></x-input>
+        <x-input title="供应商A" placeholder="必填" v-model="supplyA.name" value-text-align="left" required ref="validate"></x-input>
+        <x-input title="航班信息" placeholder="必填" v-model="supplyA.flightInfo" value-text-align="left" required ref="validate"></x-input>
+        <x-input type="number" title="总价含税/人" placeholder="必填" v-model="supplyA.price" value-text-align="left" required ref="validate"></x-input>
+        <x-input title="供应商B" placeholder="选填" v-model="supplyB.name" value-text-align="left"></x-input>
+        <x-input title="航班信息" placeholder="选填" v-model="supplyB.flightInfo" value-text-align="left"></x-input>
+        <x-input type="number" title="总价含税/人" placeholder="选填" v-model="supplyB.price" value-text-align="left"></x-input>
+        <x-input title="供应商C" placeholder="选填" v-model="supplyC.name" value-text-align="left"></x-input>
+        <x-input title="航班信息" placeholder="选填" v-model="supplyC.flightInfo" value-text-align="left"></x-input>
+        <x-input type="number" title="总价含税/人" placeholder="选填" v-model="supplyC.price" value-text-align="left"></x-input>
+        <popup-picker title="未成交原因" :data="resonList" v-model="reason"></popup-picker>
+        <x-input title="备注" placeholder="选填" v-model="remarks" value-text-align="left"></x-input>
       </group>
     </flexbox-item>
     <flexbox-item class="apin-btn-area">
-      <x-button type="primary">确认</x-button>
+      <x-button type="primary" @click.native="todo">确认</x-button>
     </flexbox-item>
   </flexbox>
 </template>
 
 <script>
 import axios from 'axios'
-import { Group, Cell, Flexbox, FlexboxItem, XButton } from 'vux'
+import { Group, Cell, Flexbox, FlexboxItem, XButton, PopupPicker, XInput, Checker, CheckerItem } from 'vux'
 export default {
-  data () {
+  data() {
     return {
-      orderInfo: {}
+      name: '',
+      supply: '1',
+      offAirport: '',
+      landAirport: '',
+      supplyA: {
+        name: '',
+        flightInfo: '',
+        price: ''
+      },
+      supplyB: {
+        name: '',
+        flightInfo: '',
+        price: ''
+      },
+      supplyC: {
+        name: '',
+        flightInfo: '',
+        price: ''
+      },
+      resonList: [['待客人回复', '询参考价', '行程不可靠', '客人预算低', '供应商价格高']],
+      reason: ['待客人回复'],
+      remarks: ''
     }
   },
-  mounted () {
+  methods: {
+    todo () {
+      this.$router.push({ path: '/'});
+    }
+  },
+  mounted() {
     axios.get('/api/suuply')
-        .then((response) => {
-          this.orderInfo = response.data;
-        });
+      .then((response) => {
+        // this.orderInfo = response.data;
+      });
   },
   components: {
-    Group, Cell,Flexbox, FlexboxItem, XButton
+    Group, Cell, Flexbox, FlexboxItem, XButton, PopupPicker, XInput, Checker, CheckerItem
   }
 }
 </script>

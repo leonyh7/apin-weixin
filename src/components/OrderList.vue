@@ -36,6 +36,10 @@
       </swipeout-item>
   
     </swipeout>
+
+    <router-link class="add" :to="{path: '/need'}">
+      +
+    </router-link>
   
   </div>
 </template>
@@ -184,5 +188,18 @@ export default {
 
 .row .col img {
   vertical-align: middle;
+}
+
+.add {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  background-color: #04BE02;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  color: #fff;
+  text-align: center;
 }
 </style>

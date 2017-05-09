@@ -24,7 +24,7 @@
 
 <script>
 import axios from 'axios'
-import { Group, Cell, Flexbox, FlexboxItem, XButton } from 'vux'
+import { Flexbox, FlexboxItem, Group, Cell, XInput, Datetime, XNumber, XButton, Checker, CheckerItem } from 'vux'
 export default {
   data () {
     return {

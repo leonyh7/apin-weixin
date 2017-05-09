@@ -7,10 +7,15 @@ import SupplyQuo from '@/components/SupplyQuo'
 
 Vue.use(Router)
 
-export default new Router({
+var router = new Router({
+  // mode: 'history',
   routes: [
     {
       path: '/',
+      redirect: {name: 'OrderList'}
+    },
+    {
+      path: '/list',
       name: 'OrderList',
       component: OrderList
     },
@@ -31,3 +36,23 @@ export default new Router({
     }
   ]
 })
+
+router.afterEach(function (route) {
+  // debugger
+  let title = ""
+  switch (route.name) {
+    case 'OrderList': title = '订单列表';break;
+    case 'OrderDetail': title = '订单详情';break;
+    case 'PutNeed': title = '发布需求';break;
+    case 'SupplyQuo': title = '供应商报价';break;
+  }
+   document.title = title
+    var state = {  
+    title: "title",  
+    url: "#"  
+  };  
+  window.history.pushState(state, title, route.path+'#');  
+  console.log(window.history);
+})
+
+export default router
