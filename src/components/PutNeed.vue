@@ -65,7 +65,7 @@ export default {
         },
         validate() {
             this.$refs.validate.$children.map(item => {
-                if(('valid' in item) && !item.valid && ('iconType' in item)) item.iconType = 'error';
+                if (('valid' in item) && !item.valid && ('iconType' in item)) item.blur();
             });
         },
         supply() {

@@ -36,7 +36,7 @@
       </swipeout-item>
   
     </swipeout>
-
+  
     <router-link class="add" :to="{path: '/need'}">
       +
     </router-link>
@@ -48,39 +48,39 @@
 import axios from 'axios'
 import { Tab, TabItem, Swipeout, SwipeoutItem, SwipeoutButton } from 'vux'
 export default {
-  data () {
+  data() {
     return {
-			index: 0, // 当前tab
-			tabs: [{
-				name: "待处理",
-				init: false,
-				orderList: [],
-				isLoaded: false,
-				pages: 0
-			}, {
-				name: "处理中",
-				init: false,
-				orderList: [],
-				isLoaded: false,
-				pages: 0
-			}, {
-				name: "已出票",
-				init: false,
-				orderList: [],
-				isLoaded: false,
-				pages: 0
-			}]
+      index: 0, // 当前tab
+      tabs: [{
+        name: "待处理",
+        init: false,
+        orderList: [],
+        isLoaded: false,
+        pages: 0
+      }, {
+        name: "处理中",
+        init: false,
+        orderList: [],
+        isLoaded: false,
+        pages: 0
+      }, {
+        name: "已出票",
+        init: false,
+        orderList: [],
+        isLoaded: false,
+        pages: 0
+      }]
     }
   },
   methods: {
-			// 获取订单列表
-			getOrderList() {
-        this.$vux.loading.show({
-          text: 'Loading'
-        })
-        axios.get('/api/getOrderList')
+    // 获取订单列表
+    getOrderList() {
+      this.$vux.loading.show({
+        text: 'Loading'
+      })
+      axios.get('/api/getOrderList')
         .then((response) => {
-          Object.assign(this.tabs[this.index],{
+          Object.assign(this.tabs[this.index], {
             orderList: response.data.orderList,
             init: true
           });
@@ -88,26 +88,26 @@ export default {
             this.$vux.loading.hide();
           })
         });
-			},
-			toggleTab (index) { // 切换tab
-				// 初始化
-        this.index = index;
-				if (!this.tabs[this.index].init) {
-					setTimeout(() => {
-						this.getOrderList();
-					},500);
-				}
-			},
-      deleteOrder(index) {
-        this.tabs[this.index].orderList.splice(index,1);
-        event.stopPropagation();
-      },
-      toDetail(id) {
-        this.$router.push({ path: '/detail', query: { id: id }})
+    },
+    toggleTab(index) { // 切换tab
+      // 初始化
+      this.index = index;
+      if (!this.tabs[this.index].init) {
+        setTimeout(() => {
+          this.getOrderList();
+        }, 500);
       }
+    },
+    deleteOrder(index) {
+      this.tabs[this.index].orderList.splice(index, 1);
+      event.stopPropagation();
+    },
+    toDetail(id) {
+      this.$router.push({ path: '/detail', query: { id: id } })
+    }
   },
-  mounted () {
-			this.getOrderList()
+  mounted() {
+    this.getOrderList()
   },
   components: {
     Tab,
@@ -127,18 +127,9 @@ export default {
   flex-direction: column;
 }
 
-.apin-swipe {
-  padding: .2rem;
-  flex: 1;
-}
-
-.apin-tab-swiper {
-  height: 100%;
-  overflow-y: auto;
-}
-
 .page {
-  padding: .2rem;
+  box-sizing: border-box;
+  padding: 10px;
   flex: 1;
   overflow-y: auto;
   display: none;
@@ -151,7 +142,7 @@ export default {
 .list {
   box-shadow: 0 1px 3px 1px rgba(0, 0, 0, .2);
   margin-top: 0;
-  margin-bottom: 0.2rem;
+  margin-bottom: 10px;
 }
 
 .page .list:last-child {
@@ -162,7 +153,7 @@ export default {
 .list-content {
   display: inline-block;
   width: 100%;
-  padding: 0.13rem 0.3rem;
+  padding: 10px;
   box-sizing: border-box;
   font-size: 14px;
 }

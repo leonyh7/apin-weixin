@@ -26,24 +26,24 @@
 import axios from 'axios'
 import { Flexbox, FlexboxItem, Group, Cell, XInput, Datetime, XNumber, XButton, Checker, CheckerItem } from 'vux'
 export default {
-  data () {
+  data() {
     return {
       orderInfo: {}
     }
   },
   methods: {
-    supply () {
-      this.$router.push({ path: '/supply'});
+    supply() {
+      this.$router.push({ path: '/supply' });
     }
   },
-  mounted () {
+  mounted() {
     axios.get('/api/getOrderDetail')
-        .then((response) => {
-          this.orderInfo = response.data;
-        });
+      .then((response) => {
+        this.orderInfo = response.data;
+      });
   },
   components: {
-    Group, Cell,Flexbox, FlexboxItem, XButton
+    Group, Cell, Flexbox, FlexboxItem, XButton
   }
 }
 </script>
@@ -52,11 +52,13 @@ export default {
 .apin-order {
   height: 100%;
 }
+
 .vux-flexbox .vux-flexbox-item.apin-btn-area {
   flex: none;
   padding: 1em;
   box-sizing: border-box;
 }
+
 .apin-btn {
   background-color: #4395ff;
   color: #fff;
