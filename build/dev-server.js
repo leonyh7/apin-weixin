@@ -29,7 +29,7 @@ var devMiddleware = require('webpack-dev-middleware')(compiler, {
 })
 
 var hotMiddleware = require('webpack-hot-middleware')(compiler, {
-  log: () => {}
+  log: () => { }
 })
 // force page reload when html-webpack-plugin template changes
 compiler.plugin('compilation', function (compilation) {
@@ -49,7 +49,14 @@ Object.keys(proxyTable).forEach(function (context) {
 })
 
 // handle fallback for HTML5 history API
-app.use(require('connect-history-api-fallback')())
+app.use(require('connect-history-api-fallback')({
+  rewrites: [
+    { from: /\/order$/, to: '/views/order.html' },
+    { from: /\/detail$/, to: '/views/orderDetail.html' },
+    { from: /\/supply$/, to: '/views/supply.html' },
+    { from: /\/need$/, to: '/views/need.html' }
+  ]
+}))
 
 // serve webpack bundle output
 app.use(devMiddleware)
