@@ -20,4 +20,11 @@ body,
 body {
   background-color: #fbf9fe;
 }
+.vux-x-input.weui-cell_warn {
+  color: #000;
+}
+
+#app .weui-cells {
+  margin-top: -1px;
+}
 </style>
