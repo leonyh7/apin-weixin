@@ -51,7 +51,11 @@ Object.keys(proxyTable).forEach(function (context) {
 // handle fallback for HTML5 history API
 app.use(require('connect-history-api-fallback')({
   rewrites: [
-    { from: /\/service$/, to: '/views/service.html' }
+    { from: /\/service$/, to: '/views/serviceQuote.html' },
+    { from: /\/issue$/, to: '/views/serviceIssue.html' },
+    { from: /\/finance$/, to: '/views/finance.html' },
+    { from: /\/manage$/, to: '/views/manage.html' },
+    { from: /\/query$/, to: '/views/query.html' }
   ]
 }))
 

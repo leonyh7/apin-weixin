@@ -21,7 +21,7 @@
           <div class="row">
             <div class="col">
               {{order.start}}
-              <img src="assets/plane.png" /> {{order.end}}
+              <img src="../../assets/plane.png" /> {{order.end}}
             </div>
           </div>
           <div class="row">
