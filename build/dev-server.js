@@ -55,7 +55,8 @@ app.use(require('connect-history-api-fallback')({
     { from: /\/issue$/, to: '/views/serviceIssue.html' },
     { from: /\/finance$/, to: '/views/finance.html' },
     { from: /\/manage$/, to: '/views/manage.html' },
-    { from: /\/query$/, to: '/views/query.html' }
+    { from: /\/query$/, to: '/views/query.html' },
+    { from: /\/apply$/, to: '/views/apply.html' }
   ]
 }))
 
