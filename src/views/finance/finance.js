@@ -5,6 +5,8 @@ import Apin from 'assets/apin'
 import Mock from 'mockjs'
 
 import FinanceList from './financeList'
+import FinanceDetail from './financeDetail'
+import FinanceApply from './financeApply'
 
 Mock.mock('/api/getFinanceList', {
   "financeList|200": [
@@ -25,6 +27,14 @@ const router = new VueRouter({
   routes: [{
       path: '/',
       component: FinanceList
+    },
+    {
+      path: '/detail',
+      component: FinanceDetail
+    },
+    {
+      path: '/apply',
+      component: FinanceApply
     }]
 })
 
