@@ -25,7 +25,7 @@
       </group>
     </flexbox-item>
     <flexbox-item class="apin-btn-area">
-      <x-button type="primary" @click.native="confirm">出单</x-button>
+      <x-button type="primary" @click.native="confirm">供应商报价</x-button>
     </flexbox-item>
   </flexbox>
 </template>

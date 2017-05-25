@@ -51,17 +51,8 @@ export default {
     },
     tip() {
       let tip = ''
-      // switch (this.type) {
-      //   case '2':
-      //     tip = "出票";
-      //     break;
-      //   case '3':
-      //   debugger;
-      //     tip = "确认";
-      //     break;
-      // }
       if (this.type == '3') {
-        tip = "确认";
+        tip = "订单归集";
       }else {
         tip = '出票'
       }
