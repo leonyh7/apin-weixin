@@ -4,37 +4,59 @@
       <tab-item v-for="(tab, index) in tabs" :key="index" @click.native="toggleTab(index)">{{tab.name}}</tab-item>
     </tab>
   
-    <swipeout class="page" :class="{active: index==i}" v-for="(tab,i) in tabs" :key="i"> 
-      <swipeout-item ref="swipeoutItem" class="list pending" v-for="(order,j) in tab.orderList" :right-menu-width="210" :key="i+''+j" @click.native="toDetail(order.orderId, tab.type)">
+    <swipeout class="page" :class="{active: index==i}" v-for="(tab,i) in tabs" :key="i" v-if="i==0">
+      <swipeout-item ref="swipeoutItem" class="list pending" v-for="(order,j) in tab.orderList" :right-menu-width="210" :key="i+''+j" @click.native="toDetail(order.order_id, tab.type)">
         <div slot="right-menu">
-          <swipeout-button @click.native="deleteOrder(j)" type="warn" :width="70">删除</swipeout-button>
+          <swipeout-button @click.native="deleteOrder(j,order.order_id)" type="warn" :width="70">删除</swipeout-button>
         </div>
         <div slot="content" class="list-content">
           <div class="row">
             <div class="col">订单号：</div>
-            <div class="col">{{order.orderId}}</div>
+            <div class="col">{{order.order_id}}</div>
           </div>
           <div class="row">
             <div class="col">订单时间：</div>
-            <div class="col">{{order.time}}</div>
+            <div class="col">{{order.create_time}}</div>
           </div>
           <div class="row">
             <div class="col">
-              {{order.start}}
-              <img src="../../assets/plane.png" /> {{order.end}}
+              {{order.from_city}}
+              <img src="../../assets/plane.png" /> {{order.to_city}}
             </div>
           </div>
           <div class="row">
             <div class="col">人数：</div>
-            <div class="col">{{order.number}}人</div>
-          </div>
-          <div class="row">
-            <div class="col">{{order.status}}</div>
+            <div class="col">{{order.total_count}}人</div>
           </div>
         </div>
       </swipeout-item>
   
     </swipeout>
+  
+    <div class="page" :class="{active: index==i}" v-for="(tab,i) in tabs" :key="i" v-if="i!=0&&i==index">
+      <div class="list pending" v-for="(order,j) in tab.orderList" :right-menu-width="210" :key="i+''+j" @click="toDetail(order.order_id, tab.type)">
+        <div slot="content" class="list-content">
+          <div class="row">
+            <div class="col">订单号：</div>
+            <div class="col word-break">{{order.order_id}}</div>
+          </div>
+          <div class="row">
+            <div class="col">订单时间：</div>
+            <div class="col">{{order.create_time | date}}</div>
+          </div>
+          <div class="row">
+            <div class="col">
+              {{order.from_city}}
+              <img src="../../assets/plane.png" /> {{order.to_city}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">人数：</div>
+            <div class="col">{{order.total_count}}人</div>
+          </div>
+        </div>
+      </div>
+    </div>
   
     <router-link class="add" :to="{path: '/need'}">
       <span>+</span>
@@ -71,7 +93,7 @@ export default {
         pages: 0,
         type: 2
       }, {
-        name: "已出票",
+        name: "已归集",
         init: false,
         orderList: [],
         isLoaded: false,
@@ -86,16 +108,19 @@ export default {
       this.$vux.loading.show({
         text: 'Loading'
       })
-      axios.get('/api/getOrderList')
-        .then((response) => {
-          Object.assign(this.tabs[this.index], {
-            orderList: response.data.orderList,
-            init: true
-          });
-          this.$nextTick(() => {
-            this.$vux.loading.hide();
-          })
+      axios.post(this.$store.state.host + '/order/orderManager/getOrderList', {
+        page_size: 20,
+        page_time: 1,
+        status_code: this.index + 1
+      }).then((response) => {
+        Object.assign(this.tabs[this.index], {
+          orderList: response.data.data,
+          init: true
         });
+        this.$nextTick(() => {
+          this.$vux.loading.hide();
+        })
+      });
     },
     toggleTab(index) { // 切换tab
       // 初始化
@@ -106,27 +131,37 @@ export default {
         }, 500);
       }
     },
-    deleteOrder(index) {
+    deleteOrder(index, id) {
+      axios.post(this.$store.state.host + '/order/orderManager/delOrder', {
+        order_id: id
+      })
+        .then((response) => {
+          console.log(response);
+        });
       this.tabs[this.index].orderList.splice(index, 1);
       event.stopPropagation();
     },
     toDetail(id, type) {
       switch (type) {
         case 0:
-          this.$router.push({ path: '/detail', query: { type } })
+          this.$router.push({ path: '/detail', query: { type, id } })
           break;
         case 1:
-          this.$router.push({ path: '/supply' })
+          this.$router.push({ path: '/supply', query: { id } })
           break;
         case 2:
-          this.$router.push({ path: '/issue', query: { type } })
+          this.$router.push({ path: '/issue', query: { type, id } })
           break;
         case 3:
-          this.$router.push({ path: '/issue', query: { type } })
           break;
         default:
           break;
       }
+    }
+  },
+  filters: {
+    date(dateString) {
+      return new Date(dateString).format("yyyy-MM-dd hh:mm:ss");
     }
   },
   created() {
@@ -188,11 +223,16 @@ export default {
   padding: 10px;
   box-sizing: border-box;
   font-size: 14px;
+  background-color: #fff;
 }
 
 
 .row {
   display: flex;
+}
+
+.row .col.word-break{
+  word-break: break-all;
 }
 
 .row .col:first-child {

@@ -3,32 +3,32 @@
         <flexbox-item class="apin-form-area">
             <group label-width="5em" label-margin-right="1.5em" ref="validate">
                 <cell title="区域" value-align="left">
-                    <checker v-model="zone" default-item-class="apin-select" selected-item-class="apin-selected">
-                        <checker-item value="1">国内</checker-item>
-                        <checker-item value="2">国外</checker-item>
+                    <checker v-model="formData.area_code" default-item-class="apin-select" selected-item-class="apin-selected">
+                        <checker-item value="0">国内</checker-item>
+                        <checker-item value="1">国外</checker-item>
                     </checker>
                 </cell>
                 <cell title="团散" value-align="left">
-                    <checker v-model="person" default-item-class="apin-select" selected-item-class="apin-selected">
-                        <checker-item value="1">散客</checker-item>
-                        <checker-item value="2">团队</checker-item>
+                    <checker v-model="formData.is_group" default-item-class="apin-select" selected-item-class="apin-selected">
+                        <checker-item value="0">散客</checker-item>
+                        <checker-item value="1">团队</checker-item>
                     </checker>
                 </cell>
                 <cell title="人员" value-align="left">
-                    <checker v-model="people" default-item-class="apin-select" selected-item-class="apin-selected">
-                        <checker-item value="1">计调</checker-item>
-                        <checker-item value="2">员工</checker-item>
+                    <checker v-model="formData.is_employee" default-item-class="apin-select" selected-item-class="apin-selected">
+                        <checker-item value="0">计调</checker-item>
+                        <checker-item value="1">员工</checker-item>
                     </checker>
                 </cell>
-                <datetime title="开始日期" v-model="startTime" :start-date="dateDefaultStart" value-text-align="left" confirm-text="确认" cancel-text="取消" @on-change="changeStart"></datetime>
-                <datetime title="结束日期" v-model="endTime" :start-date="dateDefaultEnd" value-text-align="left" confirm-text="确认" cancel-text="取消"></datetime>
-                <x-input title="旅行社城市" placeholder="必填" v-model="agencyCity" value-text-align="left" required></x-input>
-                <x-input title="旅行社名称" placeholder="必填" v-model="agencyName" required ref="agencyName"></x-input>
-                <x-input title="出发城市" placeholder="必填" v-model="startCity" value-text-align="left" required></x-input>
-                <x-input title="到达城市" placeholder="必填" v-model="arriveCity" value-text-align="left" required></x-input>
-                <x-input title="返程天数" type="number" placeholder="必填" v-model="days" required></x-input>
-                <x-input title="出行人数" type="number" placeholder="必填" v-model="total" required></x-input>
-                <x-input title="儿童人数" type="number" placeholder="必填" v-model="child" required></x-input>
+                <datetime title="开始日期" v-model="formData.from_date" :start-date="dateDefaultStart" value-text-align="left" confirm-text="确认" cancel-text="取消" @on-change="changeStart"></datetime>
+                <datetime title="结束日期" v-model="formData.to_date" :start-date="dateDefaultEnd" value-text-align="left" confirm-text="确认" cancel-text="取消"></datetime>
+                <x-input title="旅行社城市" placeholder="必填" v-model="formData.trval_agency_city" value-text-align="left" required></x-input>
+                <x-input title="旅行社名称" placeholder="必填" v-model="formData.trval_agency_name" required ref="trval_agency_name"></x-input>
+                <x-input title="出发城市" placeholder="必填" v-model="formData.from_city" value-text-align="left" required></x-input>
+                <x-input title="到达城市" placeholder="必填" v-model="formData.to_city" value-text-align="left" required></x-input>
+                <x-input title="返程天数" type="number" placeholder="必填" v-model="formData.turn_days" required></x-input>
+                <x-input title="出行人数" type="number" placeholder="必填" v-model="formData.total_count" required></x-input>
+                <x-input title="儿童人数" type="number" placeholder="必填" v-model="formData.child_count" required></x-input>
             </group>
         </flexbox-item>
         <flexbox-item class="apin-btn-area">
@@ -38,38 +38,63 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { Flexbox, FlexboxItem, Group, Cell, XInput, Datetime, XNumber, XButton, Checker, CheckerItem } from 'vux'
 export default {
     data() {
         return {
             dateDefaultStart: '',
             dateDefaultEnd: '',
-            zone: '1',
-            person: '1',
-            people: '1',
-            startTime: '',
-            endTime: '',
-            agencyCity: '',
-            agencyName: '',
-            startCity: '',
-            arriveCity: '',
-            days: '',
-            total: '',
-            child: '0'
+            formData: {
+                area_code: '0',
+                is_group: '0',
+                is_employee: '0',
+                from_date: '',
+                to_date: '',
+                trval_agency_city: '',
+                trval_agency_name: '',
+                from_city: '',
+                to_city: '',
+                turn_days: '',
+                total_count: '',
+                child_count: '0'
+            }
         }
     },
     methods: {
         changeStart(newDate) {
             this.dateDefaultEnd = newDate;
-            if (newDate > this.endTime) this.endTime = newDate;
+            if (newDate > this.to_date) this.to_date = newDate;
         },
         validate() {
+            var res = true;
             this.$refs.validate.$children.map(item => {
-                if (('valid' in item) && !item.valid && ('iconType' in item)) item.blur();
+                if (('valid' in item) && !item.valid && ('iconType' in item)) {
+                    item.blur();
+                    res = false;
+                };
             });
+            return res;
         },
         supply() {
-            if (this.validate()) this.$router.push({ path: '/list' });
+            if (!this.validate()) return;
+            let formData = Object.assign({}, this.formData, {
+                from_date: new Date(this.formData.from_date).getTime(),
+                to_date: new Date(this.formData.to_date).getTime(),
+            })
+            axios.post(this.$store.state.host + '/order/orderManager/addOrder', formData)
+                .then((response) => {
+                    if (response.data.code == 1)
+                        this.$router.push({ path: '/list' });
+                    else
+                        this.$vux.alert.show({
+                            title: '提示',
+                            content: response.data.msg,
+                        })
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         }
     },
     mounted() {
@@ -84,7 +109,7 @@ export default {
         if (strDate >= 0 && strDate <= 9) {
             strDate = "0" + strDate;
         }
-        this.dateDefaultStart = this.dateDefaultEnd = this.startTime = this.endTime = date.getFullYear() + seperator1 + month + seperator1 + strDate;
+        this.dateDefaultStart = this.dateDefaultEnd = this.formData.from_date = this.formData.to_date = date.getFullYear() + seperator1 + month + seperator1 + strDate;
     },
     components: {
         Flexbox,

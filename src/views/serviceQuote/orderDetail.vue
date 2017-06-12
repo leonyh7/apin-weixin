@@ -2,18 +2,18 @@
   <flexbox orient="vertical" :gutter="0" class="apin-order">
     <flexbox-item class="apin-form-area">
       <group>
-        <cell title="区域" :value="orderInfo.zone"></cell>
-        <cell title="团散" :value="orderInfo.group"></cell>
-        <cell title="人员" :value="orderInfo.people"></cell>
-        <cell title="开始日期" :value="orderInfo.startTime"></cell>
-        <cell title="结束日期" :value="orderInfo.endTime"></cell>
-        <cell title="旅行社城市" :value="orderInfo.travelAgencyCity"></cell>
-        <cell title="旅行社名称" :value="orderInfo.travelAgencyName"></cell>
-        <cell title="出发城市" :value="orderInfo.startCity"></cell>
-        <cell title="到达城市" :value="orderInfo.endCity"></cell>
-        <cell title="返程天数" :value="orderInfo.days"></cell>
-        <cell title="出行人数" :value="orderInfo.number"></cell>
-        <cell title="儿童人数" :value="orderInfo.child"></cell>
+        <cell title="区域" :value="orderInfo.area_code"></cell>
+        <cell title="团散" :value="orderInfo.is_group"></cell>
+        <cell title="人员" :value="orderInfo.is_employee"></cell>
+        <cell title="开始日期" :value="orderInfo.from_date"></cell>
+        <cell title="结束日期" :value="orderInfo.to_date"></cell>
+        <cell title="旅行社城市" :value="orderInfo.trval_agency_city"></cell>
+        <cell title="旅行社名称" :value="orderInfo.trval_agency_name"></cell>
+        <cell title="出发城市" :value="orderInfo.from_city"></cell>
+        <cell title="到达城市" :value="orderInfo.to_city"></cell>
+        <cell title="返程天数" :value="orderInfo.turn_days"></cell>
+        <cell title="出行人数" :value="orderInfo.total_count"></cell>
+        <cell title="儿童人数" :value="orderInfo.child_count"></cell>
       </group>
     </flexbox-item>
     <flexbox-item class="apin-btn-area">
@@ -34,18 +34,35 @@ export default {
   computed: {
     type() {
       return this.$route.query.type
+    },
+    orderId() {
+      return this.$route.query.id
     }
   },
   methods: {
     supply() {
-      this.$router.push({ path: '/list', query: { type: 1 } });
+      axios.post(this.$store.state.host + '/order/orderManager/handleOrder', {
+        order_id: this.orderId
+      }).then((response) => {
+        if (response.data.code == 1)
+          this.$router.push({ path: '/list', query: { type: 1 } });
+        else
+          this.$vux.alert.show({
+            title: '提示',
+            content: response.data.msg,
+          })
+      }).catch(function (error) {
+        console.log(error);
+      });
     }
   },
   mounted() {
-    axios.get('/api/getOrderDetail')
-      .then((response) => {
-        this.orderInfo = response.data;
-      });
+    axios.post(this.$store.state.host + '/order/orderManager/orderDetail', {
+      order_id: this.orderId
+    }).then((response) => {
+      console.log(response);
+      this.orderInfo = Object.assign({}, this.orderInfo, response.data.data);
+    });
   },
   components: {
     Group, Cell, Flexbox, FlexboxItem, XButton

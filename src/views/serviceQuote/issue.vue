@@ -2,76 +2,101 @@
   <flexbox orient="vertical" :gutter="0" class="apin-order">
     <flexbox-item class="apin-form-area">
       <group>
-        <cell title="区域" :value="orderInfo.zone"></cell>
-        <cell title="团散" :value="orderInfo.group"></cell>
-        <cell title="人员" :value="orderInfo.people"></cell>
-        <cell title="开始日期" :value="orderInfo.startTime"></cell>
-        <cell title="结束日期" :value="orderInfo.endTime"></cell>
-        <cell title="旅行社城市" :value="orderInfo.travelAgencyCity"></cell>
-        <cell title="旅行社名称" :value="orderInfo.travelAgencyName"></cell>
-        <cell title="出发城市" :value="orderInfo.startCity"></cell>
-        <cell title="到达城市" :value="orderInfo.endCity"></cell>
-        <cell title="返程天数" :value="orderInfo.days"></cell>
-        <cell title="出行人数" :value="orderInfo.number"></cell>
-        <cell title="业务员姓名" :value="orderInfo.child"></cell>
-        <cell title="供应匹配" :value="orderInfo.child"></cell>
-        <cell title="起飞机场" :value="orderInfo.child"></cell>
-        <cell title="降落机场" :value="orderInfo.child"></cell>
-        <cell title="供应商A" :value="orderInfo.child"></cell>
-        <cell title="航班信息" :value="orderInfo.child"></cell>
-        <cell title="总价含税/人" :value="orderInfo.child"></cell>
-        <cell title="供应商B" :value="orderInfo.child"></cell>
-        <cell title="航班信息" :value="orderInfo.child"></cell>
-        <cell title="总价含税/人" :value="orderInfo.child"></cell>
-        <cell title="供应商C" :value="orderInfo.child"></cell>
-        <cell title="航班信息" :value="orderInfo.child"></cell>
-        <cell title="总价含税/人" :value="orderInfo.child"></cell>
-        <cell title="未成交原因" :value="orderInfo.child"></cell>
-        <cell title="备注" :value="orderInfo.child"></cell>
+        <cell title="区域" :value="orderInfo.area_code"></cell>
+        <cell title="团散" :value="orderInfo.is_group"></cell>
+        <cell title="人员" :value="orderInfo.is_employee"></cell>
+        <cell title="开始日期" :value="orderInfo.from_date"></cell>
+        <cell title="结束日期" :value="orderInfo.to_date"></cell>
+        <cell title="旅行社城市" :value="orderInfo.trval_agency_city"></cell>
+        <cell title="旅行社名称" :value="orderInfo.trval_agency_name"></cell>
+        <cell title="出发城市" :value="orderInfo.from_city"></cell>
+        <cell title="到达城市" :value="orderInfo.to_city"></cell>
+        <cell title="返程天数" :value="orderInfo.turn_days"></cell>
+        <cell title="出行人数" :value="orderInfo.total_count"></cell>
+        <cell title="业务员姓名" :value="orderInfo.clerk_name"></cell>
+        <cell title="供应匹配" :value="orderInfo.is_supply_match"></cell>
+        <cell title="起飞机场" :value="orderInfo.airport_takeoff"></cell>
+        <cell title="降落机场" :value="orderInfo.airport_landing"></cell>
+        <cell title="供应商A" :value="orderInfo.a_supplier"></cell>
+        <cell title="航班信息" :value="orderInfo.a_flight_info"></cell>
+        <cell title="总价含税/人" :value="orderInfo.a_total_price_tax"></cell>
+        <cell title="供应商B" :value="orderInfo.b_supplier"></cell>
+        <cell title="航班信息" :value="orderInfo.b_flight_info"></cell>
+        <cell title="总价含税/人" :value="orderInfo.b_total_price_tax·"></cell>
+        <cell title="供应商C" :value="orderInfo.c_supplier"></cell>
+        <cell title="航班信息" :value="orderInfo.c_flight_info"></cell>
+        <cell title="总价含税/人" :value="orderInfo.c_total_price_tax"></cell>
+        <popup-picker title="未成交原因" :data="resonList" v-model="resonCode" show-name></popup-picker>
+        <cell title="备注" :value="orderInfo.remarks"></cell>
       </group>
     </flexbox-item>
     <flexbox-item class="apin-btn-area">
-      <x-button type="primary" class="apin-btn" @click.native="toList">{{tip}}</x-button>
+      <x-button type="primary" class="apin-btn" @click.native="toList">归集</x-button>
     </flexbox-item>
   </flexbox>
 </template>
 
 <script>
 import axios from 'axios'
-import { Flexbox, FlexboxItem, Group, Cell, XInput, Datetime, XNumber, XButton, Checker, CheckerItem } from 'vux'
+import { Flexbox, FlexboxItem, Group, Cell, XButton, PopupPicker } from 'vux'
 export default {
   data() {
     return {
-      orderInfo: {}
+      orderInfo: {
+      },
+      resonCode: [],
+      resonList: [[{
+        name: '待客人回复',
+        value: '1',
+      }, {
+        name: '询参考价',
+        value: '2',
+      }, {
+        name: '行程不可靠',
+        value: '3',
+      }, {
+        name: '客人预算低',
+        value: '4',
+      }, {
+        name: '供应商价格高',
+        value: '5',
+      }]]
     }
   },
   computed: {
     type() {
       return this.$route.query.type
     },
-    tip() {
-      let tip = ''
-      if (this.type == '3') {
-        tip = "订单归集";
-      }else {
-        tip = '出票'
-      }
-      return tip;
+    orderId() {
+      return this.$route.query.id
+    },
+    newReasonCode() {
+      return this.resonCode[0]
     }
   },
   methods: {
     toList() {
-      this.$router.push({ path: '/list', query: { type: 3 } });
+      axios.post(this.$store.state.host + '/order/orderManager/orderToCollection', {
+        order_id: this.orderId,
+        unsubmite_reason_code: this.newReasonCode || 1
+      })
+        .then((response) => {
+          this.$router.push({ path: '/list', query: { type: 3 } });
+        });
     }
   },
   mounted() {
-    axios.get('/api/getOrderDetail')
+    axios.post(this.$store.state.host + '/order/orderManager/offPriceOrderDetail', {
+      order_id: this.orderId
+    })
       .then((response) => {
-        this.orderInfo = response.data;
+        this.orderInfo = Object.assign({}, this.orderInfo, response.data.data);
+        this.resonCode = [String(this.orderInfo.unsubmite_reason_code)];
+        this.$forceUpdate();
       });
   },
   components: {
-    Group, Cell, Flexbox, FlexboxItem, XButton
+    Group, Cell, Flexbox, FlexboxItem, XButton, PopupPicker
   }
 }
 </script>
