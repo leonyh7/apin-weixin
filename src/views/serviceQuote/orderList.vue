@@ -4,8 +4,8 @@
       <tab-item v-for="(tab, index) in tabs" :key="index" @click.native="toggleTab(index)">{{tab.name}}</tab-item>
     </tab>
   
-    <swipeout class="page" :class="{active: index==i}" v-for="(tab,i) in tabs" :key="i" v-if="i==0">
-      <swipeout-item ref="swipeoutItem" class="list pending" v-for="(order,j) in tab.orderList" :right-menu-width="210" :key="i+''+j" @click.native="toDetail(order.order_id, tab.type)">
+    <swipeout class="page active" @scroll.native="handler" v-if="index==0" ref="scroller">
+      <swipeout-item ref="swipeoutItem" class="list pending" v-for="(order,j) in tabs[0].orderList" :right-menu-width="210" :key="j" @click.native="toDetail(order.order_id, tabs[0].type)">
         <div slot="right-menu">
           <swipeout-button @click.native="deleteOrder(j,order.order_id)" type="warn" :width="70">删除</swipeout-button>
         </div>
@@ -30,10 +30,9 @@
           </div>
         </div>
       </swipeout-item>
-  
     </swipeout>
   
-    <div class="page" :class="{active: index==i}" v-for="(tab,i) in tabs" :key="i" v-if="i!=0&&i==index">
+    <div class="page" :class="{active: index==i}" v-for="(tab,i) in tabs" :key="i" v-if="i!=0&&i==index" ref="scroller">
       <div class="list pending" v-for="(order,j) in tab.orderList" :right-menu-width="210" :key="i+''+j" @click="toDetail(order.order_id, tab.type)">
         <div slot="content" class="list-content">
           <div class="row">
@@ -71,6 +70,9 @@ export default {
   data() {
     return {
       index: 0, // 当前tab
+      pageSize: 5,
+      pageTime: 1,
+      isFinal: 0, // 是否最后一页 0不是最后一页 | 1是最后一页
       tabs: [{
         name: "待处理",
         init: false,
@@ -102,21 +104,50 @@ export default {
       }]
     }
   },
+  watch: {
+    index(newValue) {
+      console.log(newValue)
+      this.setBox(newValue)
+    }
+  },
   methods: {
+    setBox(index) {
+      this.$nextTick(function () {
+        if (index == 0) {
+          this.box = this.$refs.scroller.$el
+        } else {
+          this.box = this.$refs.scroller[0]
+        }
+      })
+    },
+    handler() {
+      let box = this.box
+      let {
+        clientHeight,
+        scrollTop,
+        scrollHeight
+      } = box
+      if (clientHeight + scrollTop == scrollHeight) {
+        if (this.isFinal == 0) { // 获取下一页
+          this.pageTime++
+          this.getOrderList()
+        }
+      }
+    },
     // 获取订单列表
     getOrderList() {
       this.$vux.loading.show({
         text: 'Loading'
       })
       axios.post(this.$store.state.host + '/order/orderManager/getOrderList', {
-        page_size: 20,
-        page_time: 1,
+        page_size: this.pageSize,
+        page_time: this.pageTime,
         status_code: this.index + 1
       }).then((response) => {
-        Object.assign(this.tabs[this.index], {
-          orderList: response.data.data,
-          init: true
-        });
+        this.tabs[this.index].init = true
+        this.isFinal = response.data.option.isfinal
+        if (response.data.code == 1)
+          this.tabs[this.index].orderList.push(...response.data.data)
         this.$nextTick(() => {
           this.$vux.loading.hide();
         })
@@ -169,6 +200,7 @@ export default {
     if (type) this.index = type
   },
   mounted() {
+    this.setBox(this.index)
     this.getOrderList()
   },
   components: {
@@ -231,7 +263,7 @@ export default {
   display: flex;
 }
 
-.row .col.word-break{
+.row .col.word-break {
   word-break: break-all;
 }
 
