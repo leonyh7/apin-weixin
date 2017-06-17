@@ -2,12 +2,13 @@
   <flexbox orient="vertical" :gutter="0" class="apin-order">
     <flexbox-item class="apin-form-area">
       <group>
-        <cell title="区域" :value="orderInfo.area_code"></cell>
-        <cell title="团散" :value="orderInfo.is_group"></cell>
-        <cell title="人员" :value="orderInfo.is_employee"></cell>
+        <cell title="区域" :value="orderInfo.area_code | area"></cell>
+        <cell title="人员" :value="orderInfo.is_employee | employee"></cell>
+        <cell title="行程类型" :value="orderInfo.route_type | route"></cell>
+        <cell title="团散" :value="orderInfo.is_group | group"></cell>
+        <cell title="大区域" :value="orderInfo.area_code | bigArea"></cell>
         <cell title="开始日期" :value="orderInfo.from_date"></cell>
         <cell title="结束日期" :value="orderInfo.to_date"></cell>
-        <cell title="旅行社城市" :value="orderInfo.trval_agency_city"></cell>
         <cell title="旅行社名称" :value="orderInfo.trval_agency_name"></cell>
         <cell title="出发城市" :value="orderInfo.from_city"></cell>
         <cell title="到达城市" :value="orderInfo.to_city"></cell>
@@ -60,7 +61,6 @@ export default {
     axios.post(this.$store.state.host + '/order/orderManager/orderDetail', {
       order_id: this.orderId
     }).then((response) => {
-      console.log(response);
       this.orderInfo = Object.assign({}, this.orderInfo, response.data.data);
     });
   },

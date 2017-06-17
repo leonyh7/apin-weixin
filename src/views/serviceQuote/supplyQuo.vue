@@ -9,8 +9,6 @@
             <checker-item value="1">否</checker-item>
           </checker>
         </cell>
-        <x-input title="起飞机场" placeholder="必填" v-model="formData.airport_takeoff" value-text-align="left" required></x-input>
-        <x-input title="降落机场" placeholder="必填" v-model="formData.airport_landing" value-text-align="left" required></x-input>
         <x-input title="供应商A" placeholder="必填" v-model="formData.a_supplier" value-text-align="left" required></x-input>
         <x-input title="航班信息" placeholder="必填" v-model="formData.a_flight_info" value-text-align="left" required></x-input>
         <x-input type="number" title="总价含税/人" placeholder="必填" v-model="formData.a_total_price_tax" value-text-align="left" required></x-input>
@@ -40,8 +38,6 @@ export default {
         a_flight_info: '',
         a_supplier: '',
         a_total_price_tax: '',
-        airport_landing: '',
-        airport_takeoff: '',
         b_flight_info: '',
         b_supplier: '',
         b_total_price_tax: '',

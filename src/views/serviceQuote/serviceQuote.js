@@ -11,6 +11,7 @@ import Issue from './issue'
 import PutNeed from './putNeed'
 import SupplyQuo from './supplyQuo'
 import  { AlertPlugin } from 'vux'
+import Filters from './filter'
 
 Vue.use(Vuex)
 Vue.use(AlertPlugin)
