@@ -106,7 +106,6 @@ export default {
   },
   watch: {
     index(newValue) {
-      console.log(newValue)
       this.setBox(newValue)
     }
   },

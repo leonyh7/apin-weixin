@@ -10,7 +10,7 @@
           </checker>
         </cell>
         <x-input title="供应商A" placeholder="必填" v-model="formData.a_supplier" value-text-align="left" required></x-input>
-        <x-input title="航班信息" placeholder="必填" v-model="formData.a_flight_info" value-text-align="left" required></x-input>
+        <x-textarea title="航班信息" placeholder="必填" v-model="formData.a_flight_info" value-text-align="left" required></x-textarea>
         <x-input type="number" title="总价含税/人" placeholder="必填" v-model="formData.a_total_price_tax" value-text-align="left" required></x-input>
         <x-input title="供应商B" placeholder="选填" v-model="formData.b_supplier" value-text-align="left"></x-input>
         <x-input title="航班信息" placeholder="选填" v-model="formData.b_flight_info" value-text-align="left"></x-input>
@@ -30,7 +30,7 @@
 
 <script>
 import axios from 'axios'
-import { Group, Cell, Flexbox, FlexboxItem, XButton, PopupPicker, XInput, Checker, CheckerItem } from 'vux'
+import { Group, Cell, Flexbox, FlexboxItem, XButton, PopupPicker, XInput, Checker, CheckerItem, XTextarea } from 'vux'
 export default {
   data() {
     return {
@@ -77,19 +77,19 @@ export default {
     }
   },
   components: {
-    Group, Cell, Flexbox, FlexboxItem, XButton, PopupPicker, XInput, Checker, CheckerItem
+    Group, Cell, Flexbox, FlexboxItem, XButton, PopupPicker, XInput, XTextarea, Checker, CheckerItem
   },
   methods: {
     validate() {
-            var res = true;
-            this.$refs.validate.$children.map(item => {
-                if (('valid' in item) && !item.valid && ('iconType' in item)) {
-                    item.blur();
-                    res = false;
-                };
-            });
-            return res;
-        },
+      var res = true;
+      this.$refs.validate.$children.map(item => {
+        if (('valid' in item) && !item.valid && ('iconType' in item)) {
+          item.blur();
+          res = false;
+        };
+      });
+      return res;
+    },
     confirm() {
       if (!this.validate()) return;
       let formData = Object.assign({}, this.formData, {
@@ -97,7 +97,7 @@ export default {
         order_id: this.orderId
       })
       axios.post(this.$store.state.host + '/order/orderManager/offerPriceOrder', formData)
-        .then((response)  => {
+        .then((response) => {
           if (response.data.code == 1)
             this.$router.push({ path: '/list', query: { type: 2 } });
           else
